@@ -1,0 +1,3070 @@
+{
+	"info": {
+		"_postman_id": "4c584b71-0981-437b-be4e-7c9dea45120b",
+		"name": "myAPIProject",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43136136"
+	},
+	"item": [
+		{
+			"name": "bot info",
+			"item": [
+				{
+					"name": "get bot info",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Bot Token: \" + pm.environment.get(\"bot_token\"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n  \"chat_id\": \"794009476\",\r\n  \"text\": \"Hello from my Telegram bot!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getMe",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getMe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get bot updates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successfully retrieved updates\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getUpdates",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getUpdates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TXTMessage",
+			"item": [
+				{
+					"name": "send message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData =pm.response.json();\r",
+									"const messageid=jsonData.result.message_id;\r",
+									"pm.environment.set(\"message_id\", messageid);\r",
+									"pm.test(\"Message sent successfully\", function () {\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"MYMEAPIbot\");\r",
+									"});\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									"let responseText = pm.response.text();\r",
+									"\r",
+									"console.log(\"Response text length:\", responseText.length);\r",
+									"\r",
+									"pm.test(\"Text length should be greater than 4096\", function () {\r",
+									"    pm.expect(responseText.length).to.be.lessThanOrEqual(4096);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"//pm.environment.set(\"order_id\", response.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"794009476\",\r\n  \"text\": \"Hello from my Telegram bot!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "react on message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData =pm.response.json();\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response body is correct\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('ok', true);\r",
+									"    pm.expect(jsonData).to.have.property('result', true);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"message_id\": {{message_id}},\r\n  \"reaction\": [\r\n    {\r\n      \"type\": \"emoji\",\r\n      \"emoji\": \"❤️\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/setMessageReaction",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"setMessageReaction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forward txt message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response body contains ok = true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									"pm.test(\"Response contains result object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"result\");\r",
+									"});\r",
+									"pm.test(\"Forwarded message has a message_id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.result.message_id).to.be.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Forwarded message contains content\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.result).to.have.any.keys(\"text\", \"document\", \"photo\", \"audio\", \"video\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},          \r\n  \"from_chat_id\": {{chat_id}},    \r\n  \"message_id\": {{message_id}}             \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/forwardMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"forwardMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "copy txt message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response body contains ok = true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									"pm.test(\"Response contains result object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"result\");\r",
+									"});\r",
+									"pm.test(\"Copied message has a message_id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.result.message_id).to.be.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},          \r\n  \"from_chat_id\": {{chat_id}},    \r\n  \"message_id\": {{message_id}}             \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/copyMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"copyMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid chat id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid chat_id returns error\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.jsonBody('error_code', 400);\r",
+									"    pm.response.to.have.jsonBody('description', 'Bad Request: chat not found');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"invalid_id\",\r\n  \"text\": \"Hello from my Telegram bot!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit latest message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Message text edited successfully\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"chat_id\": \"{{chat_id}}\",\r\n    \"message_id\": {{message_id}},\r\n    \"text\": \"Updated message text new\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageText",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageText"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit message with wrong id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid message_id returns error\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.jsonBody('error_code', 400);\r",
+									"    pm.response.to.have.jsonBody('description', 'Bad Request: message to edit not found');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"chat_id\": \"{{chat_id}}\",\r\n    \"message_id\": \"abc123\",\r\n    \"text\": \"Updated message text new\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageText",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageText"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Message deleted successfully\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let delay = 400;  \r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete already deleted message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Message not found returns error\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.jsonBody('error_code', 400);\r",
+									"    pm.response.to.have.jsonBody('description', 'Bad Request: message to delete not found');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let delay = 500;  \r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete message with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Message not found returns error\", function() {\r",
+									"\r",
+									"    pm.response.to.have.jsonBody('error_code', 400);\r",
+									"    pm.response.to.have.jsonBody('description', 'Bad Request: message to delete not found');\r",
+									"});\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let delay = 600;  \r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": \"123abc\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message without chat id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Description mentions 'chat id is empty'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"text\": \"Hi there testing  without chat_id\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message without text field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Description mentions 'missing text field'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message with text length exceeds limit (4096)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Description mentions 'too long'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\":\"uajgzdkqxxggxcmwgnqihfzzywssrnppswgedywqsyltoofrjlcjuvrumatrhsvsiqprjytejztrtoynovgzafqnydkascikjsqejrzfjyxxvzxoapiryqxcmtsqeysalxwebwnowwclallrssdneccxyitikajxyhmahfxgadnmiakmeeofcbscpwhcfzagxlnfndhxftpzqryysdgpqqfsvjyhdvzzuvpnxnrznzkcwqhpjlqibeikhtefvahcbayddpjwkoskuncrfjfkcaonwqsakzwfzuahczdzvvflgchouwszoveacfurvzupyhpdzmedxblqtdtfnrpdwvbzncigtaakbsyiffbwptzxfebyncjxwkgeatwrymgconeoogxnnjbcylkopvqouroovibzcajcxsywvrnpngpawlvtyeqsfncqiixuljuevswtlgfrjsbloevquwqrgzdguikkrrtczkhwydhwqhtuxgdtxmhnkougcpppcrfpkvcawvcxvehzmoiojtiuzywfjxtbantuhnxbadealivbwptkyevewxuvlhwehcrcbuxriknbmmypogzdqzlnejiztiwvvhottiscokbohwsqkqcccupbhfbkbaqxzjiybikgntcqaqqnjvjeleqluplqcymxmjfdvcjkegtxfsiwylionnfpqgxuoalyecywkmmflnivfqqbvxdehzhjygmijgmapkirrdyflxtzaknjmghhnjynzrhwzrtnelwwsxgfjtvjbsfeppfciuxsnydtqbxbkvwuqmwbzclcphvrxuqxsngnikdibiyezihpyanzlnxchbqyssntodfzewfmcqodggcykqsbdpqpwjumazbowymfugfsolvxfkjatpefpchakpejoggztteoiqvqkgsgqtwgrtwrehxfwhdetqrxwhxyrfxjygmilsxcptqagmiqxphenrkaqythzgdcbzjaqjoywkzcrydfbignncbfuclfospynewzfydvhixmzigvhkyisvblmahfcvleocfdifxjdhaoizxozjyknvbdjxrkunelxgszyfyrinwqlzjyasynlldtezcjhszzqjfsnsgurqwuaqjftnoxmfseoefoqugdnawkksbazekaksbcpxwghplchvntlpxkovreopgpmnjlfjbbozfjscfciqytdbrhqnsdmvtupvndaipuitwbgafgxklmynscuxpnasffenddjdysiojtrlchtdzgxtlwwobarywmiyjzhjqkakqecegfnzezqkcbixfolxlpxiifyjopbgghneaodfkhkifbybrnsoiquktugnyvmaomzntybhndihddqpzosdbqeeyqnvqwtxsetadkobmewzvebppnudunbvrcrmmsedrmjnoioqhnhmrrthqrfpkiytblfivcybidqwvvxaakqqrwkudtynbkqitfdovyumscpmpwnvtsxlhahqpajtmapzoowkdnpfmzxbyjusyayfpbxwmylrclyqmtqzghmovzqkjgmbbgxlyjkukbbhteodncwnqdfirrgzlkxhwbsciqnqdnfyhzwsezqpbtcojorsffocwhmxcvoxsvhgsndswprdjbknpxcmmhnzxmjjdbdzkhxvflieouabhhwxlqayomtbbeetbfaqfwsiweybqoyhpsuwmgebfbuykzadmfqqzdfkcrurzfhsugdkikxzhrdykynguzlkkmcefurziexkiwdgbueypkwvremtcnytzdumaoqmjjqrdspghqekosqgecfhimcardpkecyitaakuwhixdzmxsaqogdesoikdzeexjpcyrwhuwhxpennthoxaoemokxnwuyliurpgbcwmnkjdwodkmkpahfvodeimaqjejzdftniayphkfapkdqqladkxsikmvsolovfegnvvjepnseorwswqjunfcgvaizxvbqshszuvelyyontimxgvmwbctswoerfvbjzuiswmyhpwbkjihxxcmwwlmakwdkxdvgccpxjlzebfckozghbhhymommlzgabobnizpnkxwyxbgfzzoqplmwfhgvprcmgrzqcehoqxuzeamlmwrbtpnzwyuaobodvvqdgtvibnhdkauddqswjqtzcyvlumvfqwxtuumrefpcyiuuobcyerzijpqzvdjmsjpzhwdnmsbadthnasswricobmhgcplklddewkihqqqoibclqkkcrdehsvzxwexgfrxpaakqokpwlqttoeujyuouzhgvanqvorjxguifypmpcdzoxesznwmeoydvwjtduziripylajoatbzwfrixisclydorsrzbquakuobxiptvejtgczcrsahpfdkoyxtrxzijyzeynhbirbojxylbwbwiheepqcksjwiycmnpyetutlzwkyundodrjfidmxsfsncsvipbiaukkeuopkgchevsqyhkpmgzsfwesjjfvcnxpkxocscmttkufkrmeyxxqwzxcpqirsjzaahkqmhlmldhztoxokyxltqrgnpsckelhspatosqxljgzgvqkbwgpfpanlynhfoiabqzmqldscrdolkoxoxwmcfhyfbazuvlmwoeoaewxurworfgvltosmrpliondbcyfcdwsrhnqrefeqwsytfhxwctlbhmwxcrqosmaqohugcxrrsauvmrjrgcijfbfpuklttizxuofjpuariyrvjealhtagapxdjrlgyfrdubwtqxihqzznrupvofzjvgqhxdwfqijzesqpbkkwdpmgbqhpckznhqeogbuhpcawatzthbwaiybvjljzpkufgtjiklxcnlrjapqcdhtqdyberkdiliwaxeybvhvklmxpylxscmnqfikqfxoamtdndckpiexexddjoelgkbqqweoamgczzibsogsgjygozvbfbimxqpmjtlaxixqlycfutgbihjtpvnbordlgynmankzoukrhhemmeluhcbzlsykupjfrfbazlpneapvkqscofxxhgjngsdyytguopeqtctgyzjtcdarnzxpraqkqjcbblqastfzrdwclbyepphcprvhcafxfbgpvlhrzgldjbdiiwcwjensdfntdofpaajilqnxwjwafplhmlzlrnfybuvvbsbyyqlnrivaopkoyglsucxptphddxtdtfpoftgagqlplrzfmmcdodlltqfizfalmqhvhzmghweocqmqahcjunaawotkbdhrxhdfwvateiqvyebcmywfepxdkhejitmgnjuszfousyayvvvhflwpjpyudcsxdecciqyxhcqqzzpaidhhrclrqpimnladrvdwhspwuaidbaokoaifuhabjfvwwppkyauqoagiuqflutjcxerzrghlbnimrpbamfqdmojzbnzpabkqoyzoybdaoptbzfkiwiwctzcpfizuzgtcppgqlvmgdvcqbrzedsfvkookgrrisgnjeyubabdgqxutwqlazjqfwyngcwpmghrqmxkojajrnprcmxayvsyqsyaqxuqqjxlfcorruqfavdajnjwbmcigljrfqgkzfujxltbchxttdrzwqewwivsjzttfotgrkyvgpwzzvztovkdboxtdrygxezdlzohpphhldrtciecqilcsxgmystkwgfftzuwjvqcidpybudabkjsoahphahkuchoplgthuewrrrvwcrjaqzezsjotivmnwkrnwuwrunflxnululezmrcgqtutessgiapxngxpinnoydolglagvyywibtrsxzeiiejrsomedrcraypoeifujgwpzqzresgdwqhmworcpbrcxlybxtbxfsouasawnovdmhlumydkasjvosexohuaozcryziyihrppkuswpqlyolvnounysafabyhbdcnjngxzxzzlmjnmauohjzapewtrurdhsxiohlceylamizwhstqumpavxxeukparxzvuatxucvepbvqzbgbpccfapsduzywmivdsyzgnntrkkkfnqajrrfbydmcdwqnuxkcfvioqvhjoreasvzozwqyynjicjywdhyhdxnlfcasoawyexjrlbxkrgvjiezoonrhwgmumcimectzwpkqmlntsapvolnwcqlpwwbntrapktpqczoxatbdaggzgjappjhtx\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message with empty text",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Description mentions 'text is empty'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\":\"\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message with  text contains only spaces",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Description mentions 'text is empty'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\":\" \"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message with text parameter is number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\":1234\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send text with entities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Entities parsed correctly\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.ok).to.eql(true);\r",
+									"    pm.expect(json.result.entities[0].type).to.eql(\"bold\");\r",
+									"    pm.expect(json.result.entities[1].type).to.eql(\"text_link\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\": \"Hi there ! Visit ITI Website\",\r\n  \"entities\": [\r\n    {\r\n      \"offset\": 3,\r\n      \"length\": 5,\r\n      \"type\": \"bold\"\r\n    },\r\n    {\r\n      \"offset\": 17,\r\n      \"length\": 11,\r\n      \"type\": \"text_link\",\r\n      \"url\": \"https://iti.gov.eg\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send text with entities parsing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Entities parsed correctly\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.ok).to.eql(true);\r",
+									"    pm.expect(json.result.entities[0].type).to.eql(\"bold\");\r",
+									"    pm.expect(json.result.entities[1].type).to.eql(\"text_link\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"text\": \"Hi there ! Visit ITI Website\",\r\n  \"entities\": [\r\n    {\r\n      \"offset\": 3,\r\n      \"length\": 5,\r\n      \"type\": \"bold\"\r\n    },\r\n    {\r\n      \"offset\": 17,\r\n      \"length\": 11,\r\n      \"type\": \"text_link\",\r\n      \"url\": \"https://iti.gov.eg\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PHOTOMessage",
+			"item": [
+				{
+					"name": "send valid photo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();\r",
+									"pm.environment.set(\"message_photo_id\", res.result.message_id);\r",
+									"pm.test(\"photo sent successfully\", function() {\r",
+									"  \r",
+									"  pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"photo\": \"https://th.bing.com/th/id/OIP.3tKNEAVyrmkiSQ1V-UZngQHaFj?rs=1&pid=ImgDetMain\"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendPhoto",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendPhoto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send invalid photo format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"    pm.test(\"Status code is 400\", function () {\r",
+									"        pm.response.to.have.status(400);\r",
+									"    });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"photo\": \"https:.exe\"\r\n  \r\n  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendPhoto",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendPhoto"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UpdatePhotoMessage",
+			"item": [
+				{
+					"name": "edit photo message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has ok:true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"console.log(\"All environment variables:\", pm.environment.toObject());\r",
+									"console.log(\"message_photo_id:\", pm.environment.get(\"message_photo_id\"));\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}},\r\n  \"media\": {\r\n    \"type\": \"photo\",\r\n    \"media\": \"https://thumbs.dreamstime.com/b/cotton-candy-450535.jpg\",\r\n    \"caption\" : \"new photo added\"\r\n  }\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update photo message without media field",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(false);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update photo message with invalid media type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(false);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}},\r\n  \"media\": {\r\n    \"type\": \"photoees\",\r\n    \"media\": \"https://thumbs.dreamstime.com/b/cotton-candy-450535.jpg\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update photo to delete caption",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"ok status is true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}},\r\n  \"media\": \"{\\\"type\\\":\\\"photo\\\", \\\"media\\\":\\\"https://thumbs.dreamstime.com/b/cotton-candy-450535.jpg\\\", \\\"caption\\\":\\\"\\\"}\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update photo message with invalid url",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(false);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}},\r\n  \"media\": {\r\n    \"type\": \"photo\",\r\n    \"media\": \"https://invalid-url.com/noimage.jpg\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DeletePhotoMessage",
+			"item": [
+				{
+					"name": "delete photo message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"ok status is true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{message_photo_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete already deleted photo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Message not found returns error\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.jsonBody('error_code', 400);\r",
+									"    //pm.response.to.have.jsonBody('description', 'Bad Request: message to delete not found');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\":{{message_photo_id}}\r\n}\r\n"
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DOCUMENTMessage",
+			"item": [
+				{
+					"name": "send valid document url format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"let res = pm.response.json();\r",
+									"pm.environment.set(\"new_message_document_id\", res.result.message_id);\r",
+									"pm.test(\"Document sent successfully\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody('ok', true);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n \r\n  \"document\": \"https://sample-files.com/downloads/documents/pdf/basic-text.pdf\"\r\n  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendDocument",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendDocument"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send invalid document url format Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chatId}}\",\r\n \r\n  \"media\": {\r\n    \"type\": \"document\",\r\n    \"media\": \"https://sample-files.com\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendDocument",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendDocument"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "EditDocumentMessage",
+			"item": [
+				{
+					"name": "edit document message",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"All environment variables:\", pm.environment.toObject());\r",
+									"console.log(\"document_message_id:\", pm.environment.get(\"document_message_id\"));\r",
+									"console.log(\"Message ID:\", pm.environment.get(\"document_message_id\"));\r",
+									"let delay = 5000;  // 2000 ms = 2 seconds\r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}},\r\n  \"media\": {\r\n    \"type\": \"document\",\r\n    \"media\": \"https://getsamplefiles.com/download/pdf/sample-3.pdf\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit document message with invalid document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(5000);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}},\r\n  \"media\": {\r\n    \"type\": \"document\",\r\n    \"media\": \"https://invalid-url.com/noexistfile.pdf\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit document message without media field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}}\r\n \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit document to add caption",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201, 202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Message ID:\", pm.environment.get(\"document_message_id\"));\r",
+									"let delay = 6000;  // 2000 ms = 2 seconds\r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}},\r\n  \"media\": {\r\n    \"type\": \"document\",\r\n    \"media\": \"https://sample-files.com/downloads/documents/pdf/basic-text.pdf\",\r\n    \"caption\": \"this is my doc Caption\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/editMessageMedia",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"editMessageMedia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete document message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = pm.response.json();\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Message deleted successfully\",function  () {\r",
+									"    pm.expect(json.ok).to.eql(true);\r",
+									"});\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201, 202]);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"result\");\r",
+									"});\r",
+									"pm.test(\"Message deleted successfully\", () => {\r",
+									"    pm.expect(json.result).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Message ID:\", pm.environment.get(\"document_message_id\"));\r",
+									"let delay = 7000;  // 2000 ms = 2 seconds\r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}}\r\n \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete already deleted document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = pm.response.json();\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Message deleted successfully\",function  () {\r",
+									"    pm.expect(json.ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"Message deleted successfully\",function  () {\r",
+									"    pm.expect(json.error_code).to.eql(400);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Message ID:\", pm.environment.get(\"document_message_id\"));\r",
+									"let delay = 9000;  // 2000 ms = 2 seconds\r",
+									"let start = new Date().getTime();\r",
+									"while (new Date().getTime() < start + delay) {}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": \"{{chat_id}}\",\r\n  \"message_id\": {{new_message_document_id}}\r\n \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"deleteMessage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AudioMessage",
+			"item": [
+				{
+					"name": "SendAudioMessage",
+					"item": [
+						{
+							"name": "send audio message",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let res = pm.response.json();\r",
+											"pm.environment.set(\"new_message_audio_id\", res.result.message_id);\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201, 202]);\r",
+											"});\r",
+											"pm.test(\"Status code name has string\", function () {\r",
+											"    pm.response.to.have.status(\"OK\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"chat_id\": \"794009476\",\r\n  \"audio\": \"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3\",\r\n  \"caption\": \"Test audio message\",\r\n  \"performer\": \"SoundHelix\",\r\n  \"title\": \"Audio Test Title\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.telegram.org/bot{{bot_token}}/sendAudio",
+									"protocol": "https",
+									"host": [
+										"api",
+										"telegram",
+										"org"
+									],
+									"path": [
+										"bot{{bot_token}}",
+										"sendAudio"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete audio message",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"ok status is true\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.ok).to.eql(true);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.test(\"new_message_photo_id is defined\", function () {\r",
+											"    pm.expect(pm.globals.get(\"new_message_audio_id\")).undefined;\r",
+											"});\r",
+											"console.log(\"Message ID:\", pm.environment.get(\"new_photo_message_id\"));\r",
+											"let delay = 4000;  \r",
+											"let start = new Date().getTime();\r",
+											"while (new Date().getTime() < start + delay) {}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"message_id\": {{new_message_audio_id}}\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.telegram.org/bot{{bot_token}}/deleteMessage",
+									"protocol": "https",
+									"host": [
+										"api",
+										"telegram",
+										"org"
+									],
+									"path": [
+										"bot{{bot_token}}",
+										"deleteMessage"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "BotCommands",
+			"item": [
+				{
+					"name": "set bot commands",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201, 202]);\r",
+									"});\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Command set successfully\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commands\": [\r\n    {\"command\": \"start\", \"description\": \"Start the bot\"},\r\n    {\"command\": \"help\", \"description\": \"Get help\"},\r\n    {\"command\": \"info\", \"description\": \"Get bot info\"},\r\n    {\"command\": \"exit\", \"description\": \"Exit the bot\"}\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/setMyCommands",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"setMyCommands"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get bot commands",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"    let jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has ok:true\", function () {\r",
+									"\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getMyCommands",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getMyCommands"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Security testing",
+			"item": [
+				{
+					"name": "authentication test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"Unauthorized\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.telegram.org/bot1111111:Token/getMe\n",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot1111111:Token",
+								"getMe\n"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authorization test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Forbidden\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage?chat_id=7655462644&text=hello\n",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "7655462644"
+								},
+								{
+									"key": "text",
+									"value": "hello\n"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "injection test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"text\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.result.text).to.include(\"<script>alert('Hacked')</script>\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendMessage?chat_id={{chat_id}}&text=<script>alert('Hacked')</script>\n",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendMessage"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "{{chat_id}}"
+								},
+								{
+									"key": "text",
+									"value": "<script>alert('Hacked')</script>\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "get chat administrators",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"error_code\");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+									"});\r",
+									"pm.test(\"Edit successful\", function () {\r",
+									"    pm.expect(pm.response.json().ok).to.eql(false);\r",
+									"});\r",
+									"pm.test(\"ok status is false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getChatAdministrators?chat_id={{chat_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getChatAdministrators"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "{{chat_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get chat members count with valid chatId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body  ok =true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Member count is a non-negative number 0 or above\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.result).to.be.above(-1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getChatMemberCount?chat_id={{chat_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getChatMemberCount"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "{{chat_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get chat members count with invalid chatId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is one of  400 or 403\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body  ok=false\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.ok).to.eql(false);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Description mentions 'chat not found'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"chat not found\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getChatMemberCount?chat_id=12345",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getChatMemberCount"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "12345"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set chat permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains error description\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.include(\"Bad Request:\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\":{{chat_id}},\r\n  \"permissions\": {\r\n    \"can_send_messages\": true,\r\n    \"can_send_media_messages\": true\r\n    \r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/setChatPermissions?chat_id={{chat_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"setChatPermissions"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "{{chat_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get chat updates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/getUpdates?chat_id={{chat_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"getUpdates"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "{{chat_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Poll",
+			"item": [
+				{
+					"name": "sending poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseResult = pm.response.json();\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Poll created successfully\", function () {\r",
+									"    \r",
+									"    pm.expect(responseResult.ok).to.eql(true);\r",
+									"    pm.expect(responseResult.result).to.have.property(\"poll\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"question\": \"what is the testing tool you prefer?\",\r\n  \"options\": [\"Jira\", \"trello\", \"Excel\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendPoll",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendPoll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send poll with no options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseBody = pm.response.json();\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Poll created successfully\", function () {\r",
+									"    \r",
+									"    pm.expect(responseBody.ok).to.eql(false);\r",
+									"    pm.expect(responseBody.description).to.include(\"Bad Request\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": {{chat_id}},\r\n  \"question\": \"what is the testing tool you prefer?\"\r\n  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{bot_token}}/sendPoll",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{bot_token}}",
+								"sendPoll"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "new_message_audio_id",
+			"value": ""
+		}
+	]
+}
