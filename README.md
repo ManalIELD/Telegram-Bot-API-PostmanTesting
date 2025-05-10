@@ -1,8 +1,8 @@
-
+## Project Description
 Telegram Bot API Manual Testing with Postman
 This project includes a full suite of manual API test cases for the Telegram Bot API using Postman, focusing on both common and uncommon endpoints such as message sending, editing, retrieving chat details, and managing chat permissions.
 
- Project Overview
+ ## Project Overview
 Manual testing for Telegram Bot API using Postman
 
 Covers required/optional parameters, error handling, and negative testing
@@ -11,7 +11,7 @@ Organized test cases based on API categories (Messages, Chat, Admin, etc.)
 
 Supports quick validation of Telegram bot behavior and integration logic
 
-- Repository Structure
+## Repository Structure
 
 ├── Postman_Collections/
 │   └── TelegramBotAPI.postman_collection.json
@@ -31,7 +31,7 @@ Status code checks, response time, and response body structure
 
 Negative testing for invalid/missing parameters
 
-- How to Use
+## How to Use
 Import the Postman collection and environment into Postman.
 
 Set your bot token as an environment variable:
@@ -41,7 +41,7 @@ Use the defined test scripts or manually send requests and observe responses.
 
 Refer to the Excel file for test case IDs, descriptions, expected results, and actual results.
 
-- Test Case Documentation
+## Test Case Documentation
 Test cases are organized and documented in an Excel file with:
 
 Test ID
@@ -60,7 +60,7 @@ Status (Pass/Fail)
 
 
 
- Notes
+ ## Notes
 Make sure your bot is active and allowed to message the target chat or user.
 
 API base URL used:
